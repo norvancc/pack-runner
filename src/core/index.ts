@@ -1,3 +1,4 @@
+import path from 'path';
 import * as vscode from 'vscode';
 
 type PackageJson = {
@@ -7,6 +8,8 @@ type PackageJson = {
 };
 
 const ignoreFileList = ['node_modules', 'dist', 'build', 'out', 'lib', 'es', 'coverage'];
+
+const currentRunners: { [key: string]: vscode.Terminal } = {};
 
 // 检查是否有 package.json 文件，这是一个递归函数，如果当前目录没有 package.json 文件，弹出选择框让用户选择一个目录，然后递归调用
 const checkPackageJson = async (uri: vscode.Uri): Promise<vscode.Uri | undefined> => {
@@ -38,6 +41,18 @@ const checkPackageJson = async (uri: vscode.Uri): Promise<vscode.Uri | undefined
     // @ts-ignore
     const selectedFolderUri = vscode.Uri.joinPath(uri, selectedFolder);
     return checkPackageJson(selectedFolderUri);
+  }
+};
+
+const closeRunner = async (command: string) => {
+  // 判断当前是否存在某个终端正在运行某条命令
+  const terminals = vscode.window.terminals;
+  if (!terminals) {
+    return;
+  }
+  const terminal = terminals.find((t) => t.name === command);
+  if (terminal) {
+    terminal.dispose();
   }
 };
 
@@ -83,15 +98,32 @@ export const commandsRunner = async () => {
   }
 
   // 让用户选择一个 script
-  const script = await vscode.window.showQuickPick(Object.keys(scripts));
+  const script = await vscode.window.showQuickPick(
+    Object.keys(scripts).map((item) => {
+      return {
+        label: item,
+        command: item,
+        description: scripts[item],
+      };
+    })
+  );
   if (!script) {
     vscode.window.showErrorMessage('No script is selected.');
     return;
   }
+  if (!script.command) {
+    vscode.window.showErrorMessage('Script command is empty.');
+    return;
+  }
+
+  const terminalName = `npm run ${script.command}`;
+
+  // 关闭之前的终端
+  closeRunner(terminalName);
 
   // 执行 script
   const terminal = vscode.window.createTerminal({
-    name: `npm run ${script}`,
+    name: terminalName,
   });
   terminal.show();
 
@@ -111,11 +143,20 @@ export const commandsRunner = async () => {
   // 切换到packageJsonUri所在的目录
   const targteCdPath = packageJsonUri.fsPath?.split(currentFolder)?.[1]?.replace('/package.json', '')?.slice(1);
 
-  if (!targteCdPath) {
-    vscode.window.showErrorMessage(`Folder:${targteCdPath} is found.`);
-    return;
+  if (targteCdPath.trim()) {
+    terminal.sendText(`cd ${targteCdPath}`);
   }
 
-  terminal.sendText(`cd ${targteCdPath}`);
-  terminal.sendText(`npm run ${script}`);
+  terminal.sendText(terminalName);
+
+  currentRunners[script.command] = terminal;
 };
+
+// 监听终端关闭事件
+vscode.window.onDidCloseTerminal((terminal) => {
+  const terminalName = terminal.name;
+  if (terminalName.startsWith('npm run')) {
+    const scriptName = terminalName.replace('npm run ', '');
+    delete currentRunners[scriptName];
+  }
+});

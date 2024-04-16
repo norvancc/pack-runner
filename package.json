@@ -2,7 +2,8 @@
   "name": "packruner",
   "displayName": "Package Runner",
   "description": "Package scripts runner",
-  "version": "0.0.1",
+  "version": "0.0.3",
+  "publisher": "ccCaowenyue",
   "engines": {
     "vscode": "^1.88.0"
   },
@@ -10,6 +11,10 @@
     "Other"
   ],
   "activationEvents": [],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/WenyueLike/pack-runner"
+  },
   "icon": "images/icon.png",
   "main": "./dist/extension.js",
   "contributes": {
@@ -26,7 +31,6 @@
     "menus": {
       "editor/title": [
         {
-          "when": "resourceLangId == typescript",
           "command": "packruner.run",
           "icon": {
             "light": "./images/start.svg",
