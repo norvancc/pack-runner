@@ -34,7 +34,7 @@ No additional configuration is required for this plugin.
 
 If you encounter any issues or have suggestions, please contact us through the following means:
 
-- [GitHub Issues](https://github.com/your-github-repo/issues)
+- [GitHub Issues](https://github.com/WenyueLike/pack-runner/issues)
 
 ## Contributing
 

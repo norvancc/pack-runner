@@ -2,7 +2,7 @@
   "name": "packruner",
   "displayName": "Package Runner",
   "description": "Package scripts runner",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "publisher": "ccCaowenyue",
   "engines": {
     "vscode": "^1.88.0"
@@ -21,7 +21,7 @@
     "commands": [
       {
         "command": "packruner.run",
-        "title": "Hello World",
+        "title": "Run package scripts",
         "icon": {
           "light": "./images/start.svg",
           "dark": "./images/start_light.svg"
@@ -36,6 +36,30 @@
             "light": "./images/start.svg",
             "dark": "./images/start_light.svg"
           },
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "packruner.run",
+          "when": "editorFocus"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "packruner.run",
+          "when": "resourceScheme == 'file'"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "packruner.run",
+          "when": "editorFocus"
+        }
+      ],
+      "interactive/toolbar": [
+        {
+          "command": "packruner.run",
           "group": "navigation"
         }
       ]

@@ -6,6 +6,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+- 0.0.4
+  - Add other menu support.
 - 0.0.3
   - Fix errors when running under a single file.
 - 0.0.2
